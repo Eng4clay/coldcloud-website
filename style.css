@@ -1,0 +1,109 @@
+/* style.css - Cold Cloud (professional HVAC site) */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap');
+
+:root{
+  --blue-1:#041b2b;
+  --blue-2:#0b7fb0;
+  --sky:#00bfff;
+  --mint:#2ecc71;
+  --accent:#0b4f6a;
+  --dark:#072033;
+  --muted:#6b7b82;
+  --white:#ffffff;
+  --glass: rgba(255,255,255,0.06);
+  --radius:12px;
+  --font: 'Montserrat', system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:var(--font);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+
+/* Animated gradient background (subtle) */
+.page-bg{
+  min-height:100vh;
+  background: linear-gradient(180deg, #021224 0%, #072033 40%, #062532 100%);
+  position:relative;
+  overflow:hidden;
+}
+.wave-overlay{
+  position:absolute;left:0;right:0;top:0;height:380px;
+  background: linear-gradient(90deg, rgba(11,127,176,0.12), rgba(46,204,113,0.06));
+  filter: blur(32px);
+  transform: translateY(-40px);
+  pointer-events:none;
+}
+
+/* header */
+.header{
+  display:flex;align-items:center;gap:16px;padding:18px 28px;color:var(--white);
+  position:relative;z-index:10;
+}
+.header .logo{height:56px}
+.header .brand{font-weight:700;font-size:20px}
+.nav{margin-left:auto;display:flex;gap:12px;align-items:center}
+.nav a{color:rgba(255,255,255,0.95);text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600}
+.nav a:hover{background:rgba(255,255,255,0.06)}
+
+/* hero */
+.hero{
+  display:flex;gap:28px;align-items:center;padding:64px 28px 28px;color:var(--white);z-index:5;
+}
+.hero-left{flex:1;max-width:760px}
+.hero h1{margin:0;font-size:42px;line-height:1.02}
+.hero p{margin:14px 0;color:rgba(255,255,255,0.9);max-width:700px}
+.cta{margin-top:20px}
+.btn{display:inline-block;background:var(--white);color:var(--accent);padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700;box-shadow:0 10px 30px rgba(3,10,24,0.2)}
+.btn.secondary{background:transparent;border:2px solid rgba(255,255,255,0.12);color:var(--white)}
+
+/* container & grid */
+.container{max-width:1140px;margin:18px auto;padding:0 18px;position:relative;z-index:5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+
+/* cards */
+.card{background:rgba(255,255,255,0.03);border-radius:12px;padding:18px;color:var(--white);box-shadow:0 10px 30px rgba(3,10,24,0.25);backdrop-filter: blur(6px)}
+.card h3{margin:0 0 8px;color:var(--white)}
+.card p{color:rgba(255,255,255,0.85);margin:0}
+
+/* section styles */
+.section{margin-top:28px;padding:28px 0}
+.section .section-title{font-size:20px;color:var(--white);margin-bottom:12px}
+
+/* templates / forms (light canvas) */
+.template-wrap{background:linear-gradient(180deg,#f8feff, #eef9f9);padding:22px;border-radius:12px;box-shadow:0 12px 30px rgba(3,10,24,0.06);color:var(--dark)}
+.form-row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.form-row .field{flex:1;min-width:140px}
+label{display:block;font-weight:600;margin-bottom:6px;color:var(--dark)}
+input[type=text], input[type=number], input[type=date], textarea, select{
+  width:100%;padding:10px;border-radius:10px;border:1px solid #e1f2f6;background:#fff;font-size:14px;color:var(--dark)
+}
+textarea{min-height:120px;resize:vertical}
+
+/* preview A4 */
+.preview-a4{
+  width:210mm;min-height:297mm;padding:18mm;margin:18px auto;border:1px solid #e6eef2;border-radius:6px;background:linear-gradient(180deg,#ffffff,#f7fbfd)
+}
+.preview-header{display:flex;align-items:center;gap:12px;border-bottom:1px dashed #e2eef3;padding-bottom:10px}
+.preview-header img{height:48px}
+.preview-title{font-weight:700;color:var(--blue-2);font-size:18px}
+.preview-table{width:100%;border-collapse:collapse;margin-top:12px}
+.preview-table th, .preview-table td{border:1px solid #e6eef2;padding:8px;text-align:left;font-size:13px}
+.preview-footer{display:flex;justify-content:space-between;margin-top:12px;color:var(--muted);font-size:13px}
+
+/* utilities */
+.small{font-size:13px;color:rgba(255,255,255,0.8)}
+.no-print{display:block}
+
+/* responsive */
+@media (max-width:900px){
+  .hero{flex-direction:column;align-items:flex-start;padding:28px}
+  .header{padding:12px}
+  .container{padding:0 12px}
+  .preview-a4{width:100%;padding:12px}
+}
+
+/* print */
+@media print{
+  body{background:#fff}
+  .no-print{display:none !important}
+}

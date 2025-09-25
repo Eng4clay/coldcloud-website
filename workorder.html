@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Work Order – Cold Cloud</title><link rel="stylesheet" href="style.css"/></head>
+<body class="page-bg">
+<script> if(localStorage.getItem('cc_auth')!=='1'){ if(!requireAuth()) location.href='index.html'; } </script>
+<header class="header no-print"><img src="logo.png" class="logo"/><div class="brand">Cold Cloud</div></header>
+
+<div class="container section">
+  <div class="template-wrap">
+    <h2>Work Order — Fill & Preview</h2>
+    <form id="woForm" onsubmit="return false;">
+      <div class="form-row">
+        <div class="field"><label>Work Order No.</label><input id="wo_no" type="text"></div>
+        <div class="field"><label>Date</label><input id="wo_date" type="date"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Client Name</label><input id="wo_client" type="text"></div>
+        <div class="field"><label>Contact</label><input id="wo_contact" type="text"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Location</label><input id="wo_location" type="text"></div>
+        <div class="field"><label>Technician</label><input id="wo_tech" type="text"></div>
+      </div>
+
+      <label style="display:block;margin-top:8px;font-weight:700">Services / Notes</label>
+      <textarea id="wo_notes" placeholder="Describe the tasks performed, parts used, times..."></textarea>
+
+      <div class="actions" style="margin-top:12px">
+        <button class="btn" type="button" onclick="renderWOPreview()">Preview</button>
+        <button class="btn secondary" type="button" onclick="saveWO()">Save</button>
+        <button class="btn" type="button" onclick="printElement('woPreview')">🖨️ Print</button>
+        <button class="btn" type="button" onclick="exportElementToPDF('woPreview','workorder.pdf')">📄 Export PDF</button>
+      </div>
+
+      <hr style="margin:18px 0">
+      <label>Load saved:</label>
+      <select id="wo_saved" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6f0f3"></select>
+    </form>
+  </div>
+
+  <div id="woPreview" class="preview-a4" style="margin-top:18px;display:none"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="script.js"></script>
+<script>
+  // Render preview for a work order (data optional when previewing saved record)
+  function renderWOPreview(data){
+    const d = data || {
+      no: document.getElementById('wo_no').value,
+      date: document.getElementById('wo_date').value,
+      client: document.getElementById('wo_client').value,
+      contact: document.getElementById('wo_contact').value,
+      location: document.getElementById('wo_location').value,
+      tech: document.getElementById('wo_tech').value,
+      notes: document.getElementById('wo_notes').value
+    };
+    const html = `
+      <div class="preview-header"><img src="logo.png" alt="logo"><div><div class="preview-title">Cold Cloud – Work Order</div><div style="font-size:13px;color:#6b7b82">CR: 5906337630 • +966 55 900 258 • Cold.cloud.ac@gmail.com</div></div></div>
+      <div style="margin-top:12px"><strong>WO No:</strong> ${d.no || '-'} &nbsp;&nbsp; <strong>Date:</strong> ${d.date || '-'}</div>
+      <div style="margin-top:8px"><strong>Client:</strong> ${d.client || '-'} &nbsp;&nbsp; <strong>Contact:</strong> ${d.contact || '-'}</div>
+      <div style="margin-top:8px"><strong>Location:</strong> ${d.location || '-'} &nbsp;&nbsp; <strong>Technician:</strong> ${d.tech || '-'}</div>
+      <table class="preview-table"><thead><tr><th>Service / Notes</th></tr></thead><tbody><tr><td style="white-space:pre-wrap">${(d.notes||'-')}</td></tr></tbody></table>
+      <div class="preview-footer"><div>Signature: ____________________</div><div>Thank you for choosing Cold Cloud</div></div>
+    `;
+    const p = document.getElementById('woPreview'); p.innerHTML = html; p.style.display='block';
+  }
+
+  function saveWO(){
+    const rec = {
+      no: document.getElementById('wo_no').value,
+      date: document.getElementById('wo_date').value,
+      client: document.getElementById('wo_client').value,
+      contact: document.getElementById('wo_contact').value,
+      location: document.getElementById('wo_location').value,
+      tech: document.getElementById('wo_tech').value,
+      notes: document.getElementById('wo_notes').value
+    };
+    saveRecord('cc_wo_records', rec);
+    populateSavedList('cc_wo_records','wo_saved','renderWOPreview');
+    alert('Saved locally');
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=> populateSavedList('cc_wo_records','wo_saved','renderWOPreview'));
+</script>
+</body>
+</html>

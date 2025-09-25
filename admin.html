@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin – Cold Cloud</title><link rel="stylesheet" href="style.css"/></head>
+<body class="page-bg">
+<header class="header no-print"><img src="logo.png" class="logo"/><div class="brand">Cold Cloud - Admin</div></header>
+
+<div class="container section">
+  <h2 class="section-title">Admin Dashboard</h2>
+  <p class="small">Quick access to templates and saved records (local storage).</p>
+
+  <div class="grid">
+    <div class="card"><h3>Work Orders</h3><p class="small">Open editor and view saved orders</p><a class="btn" href="workorder.html">Open</a></div>
+    <div class="card"><h3>Checklists</h3><p class="small">Open checklist editor</p><a class="btn" href="checklist.html">Open</a></div>
+    <div class="card"><h3>Invoices</h3><p class="small">Open invoice editor</p><a class="btn" href="invoice.html">Open</a></div>
+  </div>
+
+  <div style="margin-top:18px">
+    <button class="btn" onclick="localStorage.removeItem('cc_auth'); alert('Logged out'); location.href='index.html'">Logout</button>
+  </div>
+</div>
+
+<script>
+  // Ensure only logged in users can see admin
+  if(localStorage.getItem('cc_auth')!=='1'){ if(!requireAuth()) location.href='index.html'; }
+</script>
+<script src="script.js"></script>
+</body>
+</html>

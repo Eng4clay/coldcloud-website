@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Invoice – Cold Cloud</title><link rel="stylesheet" href="style.css"/></head>
+<body class="page-bg">
+<script> if(localStorage.getItem('cc_auth')!=='1'){ if(!requireAuth()) location.href='index.html'; } </script>
+<header class="header no-print"><img src="logo.png" class="logo"/><div class="brand">Cold Cloud</div></header>
+
+<div class="container section">
+  <div class="template-wrap">
+    <h2>Invoice</h2>
+    <form id="invForm" onsubmit="return false;">
+      <div class="form-row">
+        <div class="field"><label>Invoice No.</label><input id="inv_no" type="text"></div>
+        <div class="field"><label>Date</label><input id="inv_date" type="date"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Client Name</label><input id="inv_client" type="text"></div>
+        <div class="field"><label>Service</label><input id="inv_service" type="text"></div>
+      </div>
+
+      <h4>Items</h4>
+      <div id="invItems">
+        <div class="form-row">
+          <div class="field"><input type="text" placeholder="Description" class="itm_desc"></div>
+          <div class="field"><input type="number" placeholder="Qty" class="itm_qty" min="0"></div>
+          <div class="field"><input type="number" placeholder="Unit Price" class="itm_price" min="0" step="0.01"></div>
+        </div>
+      </div>
+      <button class="btn secondary" type="button" onclick="addInvoiceRow()">+ Add Item</button>
+
+      <div class="actions">
+        <button class="btn" type="button" onclick="renderINVPreview()">Preview</button>
+        <button class="btn secondary" type="button" onclick="saveINV()">Save</button>
+        <button class="btn" type="button" onclick="printElement('invPreview')">🖨️ Print</button>
+        <button class="btn" type="button" onclick="exportElementToPDF('invPreview','invoice.pdf')">📄 Export PDF</button>
+      </div>
+
+      <hr style="margin:18px 0">
+      <label>Load saved:</label>
+      <select id="inv_saved" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6f0f3"></select>
+    </form>
+  </div>
+
+  <div id="invPreview" class="preview-a4" style="margin-top:18px;display:none"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="script.js"></script>
+<script>
+  function addInvoiceRow(){
+    const wrapper = document.getElementById('invItems');
+    const row = document.createElement('div');
+    row.className = 'form-row';
+    row.innerHTML = `<div class="field"><input type="text" placeholder="Description" class="itm_desc"></div>
+                     <div class="field"><input type="number" placeholder="Qty" class="itm_qty" min="0"></div>
+                     <div class="field"><input type="number" placeholder="Unit Price" class="itm_price" min="0" step="0.01"></div>`;
+    wrapper.appendChild(row);
+  }
+
+  function renderINVPreview(data){
+    const d = data || {
+      no: document.getElementById('inv_no').value,
+      date: document.getElementById('inv_date').value,
+      client: document.getElementById('inv_client').value,
+      service: document.getElementById('inv_service').value,
+      items: Array.from(document.querySelectorAll('#invItems .form-row')).map(r => {
+        return {
+          desc: r.querySelector('.itm_desc')?.value || '',
+          qty: Number(r.querySelector('.itm_qty')?.value || 0),
+          price: Number(r.querySelector('.itm_price')?.value || 0)
+        };
+      })
+    };
+
+    let rowsHtml = '';
+    let subtotal = 0;
+    d.items.forEach(it=>{
+      if(!it.desc) return;
+      const total = it.qty * it.price;
+      subtotal += total;
+      rowsHtml += `<tr><td>${it.desc}</td><td>${it.qty}</td><td>${it.price.toFixed(2)}</td><td>${total.toFixed(2)}</td></tr>`;
+    });
+
+    const html = `
+      <div class="preview-header"><img src="logo.png" alt="logo"><div><div class="preview-title">Cold Cloud – Invoice</div><div style="font-size:13px;color:#6b7b82">CR: 5906337630 • +966 55 900 258</div></div></div>
+      <div style="margin-top:12px"><strong>Invoice No:</strong> ${d.no || '-'} &nbsp;&nbsp; <strong>Date:</strong> ${d.date || '-'}</div>
+      <div style="margin-top:8px"><strong>Client:</strong> ${d.client || '-'} &nbsp;&nbsp; <strong>Service:</strong> ${d.service || '-'}</div>
+      <table class="preview-table"><thead><tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead><tbody>${rowsHtml}</tbody></table>
+      <div style="margin-top:10px;text-align:right"><strong>Subtotal: </strong> ${subtotal.toFixed(2)} SAR</div>
+      <div class="preview-footer"><div>Payment terms: Due on receipt</div><div>Thank you for choosing Cold Cloud</div></div>
+    `;
+
+    const p = document.getElementById('invPreview'); p.innerHTML = html; p.style.display='block';
+  }
+
+  function saveINV(){
+    const rec = {
+      no: document.getElementById('inv_no').value,
+      date: document.getElementById('inv_date').value,
+      client: document.getElementById('inv_client').value,
+      service: document.getElementById('inv_service').value,
+      items: Array.from(document.querySelectorAll('#invItems .form-row')).map(r => {
+        return {
+          desc: r.querySelector('.itm_desc')?.value || '',
+          qty: Number(r.querySelector('.itm_qty')?.value || 0),
+          price: Number(r.querySelector('.itm_price')?.value || 0)
+        };
+      })
+    };
+    saveRecord('cc_inv_records', rec);
+    populateSavedList('cc_inv_records','inv_saved','renderINVPreview');
+    alert('Saved locally');
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=> populateSavedList('cc_inv_records','inv_saved','renderINVPreview'));
+</script>
+</body>
+</html>

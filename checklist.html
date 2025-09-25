@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Checklist – Cold Cloud</title><link rel="stylesheet" href="style.css"/></head>
+<body class="page-bg">
+<script> if(localStorage.getItem('cc_auth')!=='1'){ if(!requireAuth()) location.href='index.html'; } </script>
+<header class="header no-print"><img src="logo.png" class="logo"/><div class="brand">Cold Cloud</div></header>
+
+<div class="container section">
+  <div class="template-wrap">
+    <h2>Maintenance Checklist</h2>
+    <form id="chkForm" onsubmit="return false;">
+      <div class="form-row">
+        <div class="field"><label>Equipment</label><input id="chk_equip" type="text"></div>
+        <div class="field"><label>Location</label><input id="chk_loc" type="text"></div>
+      </div>
+
+      <div style="margin-top:8px">
+        <label><input type="checkbox" id="chk_filter"> Filter Check</label><br>
+        <label><input type="checkbox" id="chk_cooling"> Cooling Level</label><br>
+        <label><input type="checkbox" id="chk_energy"> Energy Efficiency</label>
+      </div>
+
+      <div class="actions">
+        <button class="btn" type="button" onclick="renderCHKPreview()">Preview</button>
+        <button class="btn secondary" type="button" onclick="saveCHK()">Save</button>
+        <button class="btn" type="button" onclick="printElement('chkPreview')">🖨️ Print</button>
+        <button class="btn" type="button" onclick="exportElementToPDF('chkPreview','checklist.pdf')">📄 Export PDF</button>
+      </div>
+
+      <hr style="margin:18px 0">
+      <label>Load saved:</label>
+      <select id="chk_saved" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6f0f3"></select>
+    </form>
+  </div>
+
+  <div id="chkPreview" class="preview-a4" style="margin-top:18px;display:none"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="script.js"></script>
+<script>
+  function renderCHKPreview(data){
+    const d = data || {
+      equip: document.getElementById('chk_equip').value,
+      loc: document.getElementById('chk_loc').value,
+      filter: document.getElementById('chk_filter').checked,
+      cooling: document.getElementById('chk_cooling').checked,
+      energy: document.getElementById('chk_energy').checked
+    };
+    const html = `
+      <div class="preview-header"><img src="logo.png" alt="logo"><div><div class="preview-title">Cold Cloud – Maintenance Checklist</div><div style="font-size:13px;color:#6b7b82">CR: 5906337630 • +966 55 900 258</div></div></div>
+      <div style="margin-top:12px"><strong>Equipment:</strong> ${d.equip || '-'} &nbsp;&nbsp; <strong>Location:</strong> ${d.loc || '-'}</div>
+      <table class="preview-table"><thead><tr><th>Check Item</th><th>Condition</th></tr></thead><tbody>
+        <tr><td>Filter Check</td><td>${d.filter ? 'OK' : 'Needs Service'}</td></tr>
+        <tr><td>Cooling Level</td><td>${d.cooling ? 'OK' : 'Review'}</td></tr>
+        <tr><td>Energy Efficiency</td><td>${d.energy ? 'OK' : 'Review'}</td></tr>
+      </tbody></table>
+      <div class="preview-footer"><div>Technician: ____________________</div><div>Date: ${new Date().toLocaleDateString()}</div></div>
+    `;
+    const p = document.getElementById('chkPreview'); p.innerHTML = html; p.style.display='block';
+  }
+
+  function saveCHK(){
+    const rec = {
+      equip: document.getElementById('chk_equip').value,
+      loc: document.getElementById('chk_loc').value,
+      filter: document.getElementById('chk_filter').checked,
+      cooling: document.getElementById('chk_cooling').checked,
+      energy: document.getElementById('chk_energy').checked
+    };
+    saveRecord('cc_chk_records', rec);
+    populateSavedList('cc_chk_records','chk_saved','renderCHKPreview');
+    alert('Saved locally');
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=> populateSavedList('cc_chk_records','chk_saved','renderCHKPreview'));
+</script>
+</body>
+</html>
